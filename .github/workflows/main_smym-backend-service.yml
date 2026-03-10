@@ -21,7 +21,7 @@ env:
   JAVA_DISTRIBUTION: 'microsoft'
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -46,6 +46,10 @@ jobs:
             -Dimage.tag=${IMAGE_TAG} \
             clean compile jib:build
 
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
       - name: Deploy container image to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
