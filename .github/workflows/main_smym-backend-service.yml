@@ -9,16 +9,22 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  APPLICATION_PUBLISH_PROFILE: ${{ secrets.APP_PUBLISH_PROFILE }}
+  WEBAPP_NAME: 'smym-backend'
+  ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
+  ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+  ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+  IMAGE_NAME: backend-service
+  IMAGE_TAG: 1.0.0
+  JAVA_VERSION: '21'
+  JAVA_DISTRIBUTION: 'microsoft'
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-
-    env:
-      ACR_LOGIN_SERVER: smymregistry.azurecr.io
-      IMAGE_NAME: backend-service
-      IMAGE_TAG: 1.0.0
 
     steps:
       - uses: actions/checkout@v4
@@ -26,13 +32,13 @@ jobs:
       - name: Set up Java version
         uses: actions/setup-java@v4
         with:
-          java-version: "21"
-          distribution: "microsoft"
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
 
       - name: Build & Push image to ACR with Jib
         env:
-          ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
-          ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+          ACR_USERNAME: ${{ env.ACR_USERNAME }}
+          ACR_PASSWORD: ${{ env.ACR_PASSWORD }}
         run: |
           mvn -DskipTests \
             -Dspring.profiles.active=cloud,logging \
@@ -44,7 +50,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: "smym-backend-service"
+          app-name: ${{ env.WEBAPP_NAME }}
           slot-name: "Production"
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
           images: "${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
