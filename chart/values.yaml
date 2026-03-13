@@ -9,6 +9,9 @@ image:
   pullPolicy: IfNotPresent
   tag: "1.0.0"
 
+env: {}
+#  SPRING_PROFILES_ACTIVE: "cloud"
+
 service:
   type: ClusterIP
   port: 8080
@@ -27,3 +30,13 @@ secrets:
   KEYCLOAK_USERNAME: ""
   KEYCLOAK_PASSWORD: ""
   OPENAI_API_KEY: ""
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations: {}
+  host: backend.scottmakesyoumove.com
+  tls: []
+  #  - secretName: backend-tls
+  #    hosts:
+  #      - backend.scottmakesyoumove.com
