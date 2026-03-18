@@ -10,7 +10,12 @@ image:
   tag: "1.0.0"
 
 env: {}
-#  SPRING_PROFILES_ACTIVE: "cloud"
+
+envFrom:
+  - configMapRef:
+      name: backend-service-config
+  - secretRef:
+      name: backend-sealed-secret
 
 service:
   type: ClusterIP
@@ -23,13 +28,6 @@ resources:
    requests:
      cpu: 250m
      memory: 512Mi
-
-secrets:
-  AZURE_POSTGRESQL_USERNAME: ""
-  AZURE_POSTGRESQL_PASSWORD: ""
-  KEYCLOAK_USERNAME: ""
-  KEYCLOAK_PASSWORD: ""
-  OPENAI_API_KEY: ""
 
 ingress:
   enabled: true

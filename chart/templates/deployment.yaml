@@ -27,19 +27,22 @@ spec:
               value: {{ $value | quote }}
             {{- end }}
           envFrom:
+            {{- toYaml .Values.envFrom | nindent 12 }}
             - secretRef:
-                name: {{ include "backend-service.fullname" . }}-secrets
+                name: backend-sealed-secret
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           readinessProbe:
             httpGet:
               path: /actuator/health
               port: 8080
-            initialDelaySeconds: 30
-            periodSeconds: 10
+            initialDelaySeconds: 120
+            periodSeconds: 30
+            failureThreshold: 3
           livenessProbe:
             httpGet:
               path: /actuator/health
               port: 8080
-            initialDelaySeconds: 60
-            periodSeconds: 15
+            initialDelaySeconds: 120
+            periodSeconds: 30
+            failureThreshold: 3

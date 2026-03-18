@@ -37,7 +37,8 @@ public class SecurityConfiguration {
             "/v3/api-docs/**",
             "/v3/api-docs",
             "/webjars/**",
-            "/h2-console/**"
+            "/h2-console/**",
+            "/actuator/health",
     };
     private final JwtConverter jwtConverter;
     private final ObjectMapper mapper;

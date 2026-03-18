@@ -18,7 +18,8 @@ spring:
       cosmosdb:
         endpoint: ${AZURE_COSMOSDB_ENDPOINT:http://someendpoint.com}
         key: ${AZURE_COSMOSDB_KEY:somekey}
-        database-name: ${AZURE_COSMOSDB_DATABASE:test-database}
+        database-name: ${AZURE_COSMOSDB_DATABASE:rag-knowledge-base}
+        initialize-schema: false
     openai:
       api-key: ${OPENAI_API_KEY:somekey}
       options:
