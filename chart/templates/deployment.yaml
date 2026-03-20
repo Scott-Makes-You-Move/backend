@@ -19,7 +19,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 8080
+            - name: http
+              containerPort: 8080
               protocol: TCP
           env:
             {{- range $key, $value := .Values.env }}
@@ -37,12 +38,12 @@ spec:
               path: /actuator/health
               port: 8080
             initialDelaySeconds: 120
-            periodSeconds: 30
-            failureThreshold: 3
+            periodSeconds: 15
+            failureThreshold: 10
           livenessProbe:
             httpGet:
               path: /actuator/health
               port: 8080
             initialDelaySeconds: 120
-            periodSeconds: 30
-            failureThreshold: 3
+            periodSeconds: 15
+            failureThreshold: 10
