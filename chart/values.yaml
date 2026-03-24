@@ -9,8 +9,6 @@ image:
   pullPolicy: IfNotPresent
   tag: "1.0.0"
 
-env: {}
-
 envFrom:
   - configMapRef:
       name: backend-service-config
