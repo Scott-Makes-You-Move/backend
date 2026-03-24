@@ -1,9 +1,6 @@
 package nl.optifit.backendservice.configuration;
 
-import com.azure.cosmos.ConsistencyLevel;
 import com.azure.cosmos.CosmosAsyncClient;
-import com.azure.cosmos.CosmosClientBuilder;
-import lombok.RequiredArgsConstructor;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.ai.vectorstore.cosmosdb.CosmosDBVectorStore;
