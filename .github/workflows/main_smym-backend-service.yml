@@ -19,6 +19,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      image_tag: ${{ steps.extract_version.outputs.image_tag }}
 
     steps:
       - uses: actions/checkout@v4
@@ -26,8 +28,10 @@ jobs:
           fetch-depth: 0
 
       - name: Extract version from tag
+        id: extract_version
         run: |
           echo "IMAGE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+          echo "image_tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
       - name: Set up Java version
         uses: actions/setup-java@v4
@@ -88,5 +92,5 @@ jobs:
           helm upgrade --install backend ./chart \
             --namespace default \
             --set image.repository=${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }} \
-            --set image.tag=${{ env.IMAGE_TAG }} \
+            --set image.tag=${{ needs.build.outputs.image_tag }} \
             --wait
