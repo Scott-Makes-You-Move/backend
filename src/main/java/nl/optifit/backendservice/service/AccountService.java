@@ -61,7 +61,10 @@ public class AccountService {
     @Transactional
     public AccountDto createAccount(String accountId, String timezone) throws IOException {
         log.info("Creating account '{}' with timezone '{}'", accountId, timezone);
-        Account account = Account.builder().id(accountId).build();
+        Account account = Account.builder()
+                .id(accountId)
+                .timezone(timezone != null ? timezone : "Europe/Amsterdam")
+                .build();
         Leaderboard leaderboard = leaderboardService.createLeaderboardForAccount(account);
         account.setLeaderboard(leaderboard);
         Account savedAccount = accountRepository.save(account);
