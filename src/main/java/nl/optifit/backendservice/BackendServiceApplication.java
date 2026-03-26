@@ -17,7 +17,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class BackendServiceApplication {
 
-    // Dummy change
     public static void main(String[] args) {
         SpringApplication.run(BackendServiceApplication.class, args);
     }
