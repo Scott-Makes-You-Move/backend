@@ -36,7 +36,7 @@ data:
   NOTIFICATION_USER_ID: "4058614e-57f2-4e46-8427-eb103a435a13"
   NOTIFICATION_USER_EMAIL: "scott.everduim@outlook.com"
   NOTIFICATION_USER_NAME: "Scott Everduim"
-  FRONTEND_URL: "http://scottmakesyoumove.com"
+  FRONTEND_URL: "https://scottmakesyoumove.com"
   APP_SECURITY_ENABLED: "true"
   OPENAI_API_MODEL: "gpt-3.5-turbo"
   OPENAI_API_EMBEDDING_MODEL: "text-embedding-3-small"
