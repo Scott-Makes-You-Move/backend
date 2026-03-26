@@ -5,9 +5,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import nl.optifit.backendservice.security.JwtConverter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -20,10 +22,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.web.cors.CorsConfiguration;
 import org.zalando.problem.Problem;
 import org.zalando.problem.Status;
 
 import java.net.URI;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
@@ -40,13 +44,18 @@ public class SecurityConfiguration {
             "/h2-console/**",
             "/actuator/health",
     };
+
     private final JwtConverter jwtConverter;
     private final ObjectMapper mapper;
+
+    @Value("${frontend.url}")
+    private String frontendUrl;
 
     @Bean
     @ConditionalOnProperty(name = "app.security.enabled", havingValue = "false")
     public SecurityFilterChain permitAllSecurityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(request -> corsConfiguration()))
                 .authorizeHttpRequests(authz -> authz.anyRequest().permitAll())
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
 
@@ -59,8 +68,10 @@ public class SecurityConfiguration {
         return http
                 .securityMatcher("/**")
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(request -> corsConfiguration()))
                 .authorizeHttpRequests(authz ->
                         authz
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 .requestMatchers(PERMITTED_PATHS).permitAll()
                                 .anyRequest().authenticated())
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
@@ -71,6 +82,15 @@ public class SecurityConfiguration {
                                 .accessDeniedHandler(problemAccessDeniedHandler()))
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtConverter)))
                 .build();
+    }
+
+    private CorsConfiguration corsConfiguration() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of(frontendUrl));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+        return config;
     }
 
     @Bean
