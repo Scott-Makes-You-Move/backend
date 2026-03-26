@@ -38,4 +38,3 @@ data:
   NOTIFICATION_USER_NAME: "Scott Everduim"
   FRONTEND_URL: "http://scottmakesyoumove.com"
   APP_SECURITY_ENABLED: "true"
-  SPRING_FLYWAY_ENABLED: "false"
