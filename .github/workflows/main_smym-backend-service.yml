@@ -2,8 +2,8 @@ name: Build and deploy Backend to AKS
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - '*.*.*'
   workflow_dispatch:
 
 env:
@@ -11,7 +11,6 @@ env:
   ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
   ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
   IMAGE_NAME: backend-service
-  IMAGE_TAG: 1.0.2
   JAVA_VERSION: '21'
   JAVA_DISTRIBUTION: 'microsoft'
 
@@ -19,10 +18,41 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from tag
+        run: |
+          echo "IMAGE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Update pom.xml version
+        run: mvn versions:set -DnewVersion=${{ env.IMAGE_TAG }} -DgenerateBackupPoms=false
+
+      - name: Update Chart.yaml version
+        run: |
+          sed -i "s/^version:.*/version: ${{ env.IMAGE_TAG }}/" ./chart/Chart.yaml
+          sed -i "s/^appVersion:.*/appVersion: \"${{ env.IMAGE_TAG }}\"/" ./chart/Chart.yaml
+
+      - name: Commit version bumps
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add pom.xml ./chart/Chart.yaml
+          git commit -m "chore: bump version to ${{ env.IMAGE_TAG }}"
+          git push origin HEAD:main
+
+      - name: Set next SNAPSHOT version
+        run: |
+          IFS='.' read -r MAJOR MINOR PATCH <<< "${{ env.IMAGE_TAG }}"
+          NEXT_VERSION="$MAJOR.$MINOR.$((PATCH + 1))-SNAPSHOT"
+          mvn versions:set -DnewVersion=$NEXT_VERSION -DgenerateBackupPoms=false
+          git add pom.xml
+          git commit -m "chore: set next development version to $NEXT_VERSION"
+          git push origin HEAD:main
 
       - name: Set up Java version
         uses: actions/setup-java@v4
@@ -31,14 +61,11 @@ jobs:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
 
       - name: Build & Push image to ACR with Jib
-        env:
-          ACR_USERNAME: ${{ env.ACR_USERNAME }}
-          ACR_PASSWORD: ${{ env.ACR_PASSWORD }}
         run: |
           mvn -DskipTests \
             -Dspring.profiles.active=cloud,logging \
             -Dacr.loginServer=${ACR_LOGIN_SERVER} \
-            -Dimage.tag=${IMAGE_TAG} \
+            -Dimage.tag=${{ env.IMAGE_TAG }} \
             clean compile jib:build
 
   deploy:
