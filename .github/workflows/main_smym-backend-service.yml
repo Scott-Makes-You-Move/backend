@@ -29,6 +29,12 @@ jobs:
         run: |
           echo "IMAGE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
+      - name: Set up Java version
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+
       - name: Update pom.xml version
         run: mvn versions:set -DnewVersion=${{ env.IMAGE_TAG }} -DgenerateBackupPoms=false
 
@@ -41,9 +47,17 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add pom.xml ./chart/Chart.yaml
+          git add pom.xml ./chart/Chart.yaml ./chart/values.yaml
           git commit -m "chore: bump version to ${{ env.IMAGE_TAG }}"
           git push origin HEAD:main
+
+      - name: Build & Push image to ACR with Jib
+        run: |
+          mvn -DskipTests \
+            -Dspring.profiles.active=cloud,logging \
+            -Dacr.loginServer=${ACR_LOGIN_SERVER} \
+            -Dimage.tag=${{ env.IMAGE_TAG }} \
+            clean compile jib:build
 
       - name: Set next SNAPSHOT version
         run: |
@@ -53,20 +67,6 @@ jobs:
           git add pom.xml
           git commit -m "chore: set next development version to $NEXT_VERSION"
           git push origin HEAD:main
-
-      - name: Set up Java version
-        uses: actions/setup-java@v4
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: ${{ env.JAVA_DISTRIBUTION }}
-
-      - name: Build & Push image to ACR with Jib
-        run: |
-          mvn -DskipTests \
-            -Dspring.profiles.active=cloud,logging \
-            -Dacr.loginServer=${ACR_LOGIN_SERVER} \
-            -Dimage.tag=${{ env.IMAGE_TAG }} \
-            clean compile jib:build
 
   deploy:
     runs-on: ubuntu-latest
