@@ -2,9 +2,9 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "backend-service.fullname" . }}
+  name: {{ include "smym-backend.fullname" . }}
   labels:
-    {{- include "backend-service.labels" . | nindent 4 }}
+    {{- include "smym-backend.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -31,7 +31,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ include "backend-service.fullname" . }}
+                name: {{ include "smym-backend.fullname" . }}
                 port:
                   number: {{ .Values.service.port }}
 {{- end }}

@@ -7,10 +7,6 @@ spring:
     locations: classpath:db/migration
     baseline-on-migrate: true
     baseline-version: 0
-  autoconfigure:
-    exclude:
-      - org.zalando.problem.spring.web.autoconfigure.security.ProblemSecurityAutoConfiguration
-      - org.zalando.problem.spring.web.autoconfigure.ProblemJacksonAutoConfiguration
 
 server:
   port: 8080
@@ -18,23 +14,3 @@ server:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
-
-cron:
-  sessions:
-    morning:
-      create: "10:00"
-      update: "11:00"
-    lunch:
-      create: "13:30"
-      update: "14:30"
-    afternoon:
-      create: "15:00"
-      update: "16:00"
-  leaderboard:
-    reset: "0 0 6 1 * ?"
-  drive:
-    sync: "0 0 18 ? * 6"
-
-logging:
-  level:
-    org.springframework.ai.chat.client.advisor: DEBUG

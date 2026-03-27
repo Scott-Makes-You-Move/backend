@@ -6,12 +6,16 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.zalando.problem.spring.web.autoconfigure.ProblemJacksonAutoConfiguration;
+import org.zalando.problem.spring.web.autoconfigure.security.ProblemSecurityAutoConfiguration;
 
 @Slf4j
 @SpringBootApplication(
         exclude = {
                 CosmosDBVectorStoreAutoConfiguration.class,
-                ErrorMvcAutoConfiguration.class
+                ErrorMvcAutoConfiguration.class,
+                ProblemSecurityAutoConfiguration.class,
+                ProblemJacksonAutoConfiguration.class
         }
 )
 @EnableScheduling
