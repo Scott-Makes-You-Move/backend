@@ -45,7 +45,7 @@ jobs:
       - name: Update Chart.yaml version
         run: |
           sed -i "s/^appVersion:.*/appVersion: \"${{ env.IMAGE_TAG }}\"/" ./chart/Chart.yaml
-          sed -i "s/^  tag:.*/  tag: \"${{ env.IMAGE_TAG }}\"/" ./chart/values.yaml
+          sed -i "s/^  tag:.*/  tag: \"${{ env.IMAGE_TAG }}\"/" ./chart/values-prod.yaml
 
       - name: Commit version bumps
         run: |
