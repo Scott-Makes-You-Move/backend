@@ -1,19 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "backend-service.fullname" . }}
+  name: {{ include "smym-backend.fullname" . }}
   labels:
-    {{- include "backend-service.labels" . | nindent 4 }}
+    {{- include "smym-backend.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "backend-service.selectorLabels" . | nindent 6 }}
+      {{- include "smym-backend.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        {{- include "backend-service.selectorLabels" . | nindent 8 }}
+        {{- include "smym-backend.selectorLabels" . | nindent 8 }}
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

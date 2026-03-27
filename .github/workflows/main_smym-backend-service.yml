@@ -10,7 +10,7 @@ env:
   ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
   ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
   ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
-  IMAGE_NAME: backend-service
+  IMAGE_NAME: backend
   JAVA_VERSION: '21'
   JAVA_DISTRIBUTION: 'microsoft'
 
@@ -89,8 +89,10 @@ jobs:
 
       - name: Deploy Backend
         run: |
-          helm upgrade --install backend ./chart \
-            --namespace default \
+          helm upgrade --install smym-prod ./chart \
+            --namespace smym-prod \
+            --create-namespace \
+            -f ./chart/values-prod.yaml \
             --set image.repository=${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }} \
             --set image.tag=${{ needs.build.outputs.image_tag }} \
             --wait
