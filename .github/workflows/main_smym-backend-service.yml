@@ -13,6 +13,7 @@ env:
   IMAGE_NAME: backend
   JAVA_VERSION: '21'
   JAVA_DISTRIBUTION: 'microsoft'
+  ENVIRONMENT: 'prod'
 
 jobs:
   build:
@@ -45,13 +46,13 @@ jobs:
       - name: Update Chart.yaml version
         run: |
           sed -i "s/^appVersion:.*/appVersion: \"${{ env.IMAGE_TAG }}\"/" ./chart/Chart.yaml
-          sed -i "s/^  tag:.*/  tag: \"${{ env.IMAGE_TAG }}\"/" ./chart/values-prod.yaml
+          sed -i "s/^  tag:.*/  tag: \"${{ env.IMAGE_TAG }}\"/" ./chart/values-${{ env.ENVIRONMENT }}.yaml
 
       - name: Commit version bumps
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add pom.xml ./chart/Chart.yaml ./chart/values.yaml
+          git add pom.xml ./chart/Chart.yaml ./chart/values-${{ env.ENVIRONMENT }}.yaml
           git commit -m "chore: bump version to ${{ env.IMAGE_TAG }}"
           git push origin HEAD:main
 
@@ -89,10 +90,10 @@ jobs:
 
       - name: Deploy Backend
         run: |
-          helm upgrade --install smym-prod ./chart \
-            --namespace smym-prod \
+          helm upgrade --install smym-${{ env.ENVIRONMENT }} ./chart \
+            --namespace smym-${{ env.ENVIRONMENT }} \
             --create-namespace \
-            -f ./chart/values-prod.yaml \
+            -f ./chart/values-${{ env.ENVIRONMENT }}.yaml \
             --set image.repository=${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }} \
             --set image.tag=${{ needs.build.outputs.image_tag }} \
             --wait
