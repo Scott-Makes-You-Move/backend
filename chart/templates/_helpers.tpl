@@ -1,5 +1,5 @@
 {{- define "smym-backend.fullname" -}}
-{{- .Release.Name }}-{{- .Chart.Name }}
+{{- .Release.Name }}
 {{- end }}
 
 {{- define "smym-backend.labels" -}}
