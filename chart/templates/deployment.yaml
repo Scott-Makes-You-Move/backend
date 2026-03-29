@@ -31,7 +31,7 @@ spec:
           envFrom:
             {{- toYaml .Values.envFrom | nindent 12 }}
             - secretRef:
-                name: backend-sealed-secret
+                name: backend-sealed-secrets
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           readinessProbe:
