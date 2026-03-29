@@ -59,7 +59,7 @@ jobs:
       - name: Build & Push image to ACR with Jib
         run: |
           mvn -DskipTests \
-            -Dspring.profiles.active=cloud,logging \
+            -Dspring.profiles.active=logging \
             -Dacr.loginServer=${ACR_LOGIN_SERVER} \
             -Dimage.tag=${{ env.IMAGE_TAG }} \
             clean compile jib:build

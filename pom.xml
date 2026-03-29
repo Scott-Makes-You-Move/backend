@@ -10,10 +10,10 @@
         <relativePath />
     </parent>
     <groupId>nl.optifit</groupId>
-    <artifactId>backend-service</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <artifactId>backend</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>backend-service</name>
+    <name>backend</name>
     <description>backend-service</description>
 
     <properties>
