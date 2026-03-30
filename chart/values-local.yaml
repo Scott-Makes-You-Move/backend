@@ -28,7 +28,7 @@ env:
   CHAT_CLIENT_ADVISORS_LOGGING_ENABLED: "true"
   CHAT_CLIENT_ADVISORS_MASKING_ENABLED: "false"
   CRON_DRIVE_SYNC: "0 0 18 ? * 6" # at 6:00pm every Saturday
-  CRON_LEADERBOARD_RESET: "0 0 6 1 * ?" # at 6:00 on the first day of the month
+  CRON_LEADERBOARD_RESET: "0 0 5 1 * ?" # at 5:00am on the first day of the month
   CRON_SESSIONS_MORNING_CREATE: "10:00"
   CRON_SESSIONS_MORNING_UPDATE: "11:00"
   CRON_SESSIONS_LUNCH_CREATE: "13:30"
