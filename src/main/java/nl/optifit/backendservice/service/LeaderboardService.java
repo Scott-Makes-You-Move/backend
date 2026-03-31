@@ -120,7 +120,7 @@ public class LeaderboardService {
             return;
         }
 
-        String recentWinner = findRecentWinner(leaderboards);
+        String recentWinner = findRecentWinnerAccountId(leaderboards);
 
         leaderboards.forEach(leaderboard -> {
             boolean isRecentWinner = leaderboard.getAccountId().equalsIgnoreCase(recentWinner);
@@ -145,7 +145,7 @@ public class LeaderboardService {
             leaderboard.setLongestStreak(Math.max(leaderboard.getCurrentStreak(), leaderboard.getLongestStreak()));
         }
         if (sessionStatus.equals(OVERDUE)) {
-            leaderboard.setScore(calculateScore(leaderboard.getScore(), latestSession.getSessionStart(), latestSession.getSessionExecutionTime()));
+            leaderboard.setScore(leaderboard.getScore() == null ? 25 : leaderboard.getScore() + 25);
             leaderboard.setCurrentStreak(0);
         }
         leaderboard.setCompletionRate(calculateSessionCompletionRate(account, leaderboard));
@@ -154,7 +154,7 @@ public class LeaderboardService {
         return leaderboard;
     }
 
-    private static String findRecentWinner(List<Leaderboard> leaderboards) {
+    private static String findRecentWinnerAccountId(List<Leaderboard> leaderboards) {
         List<Leaderboard> sorted = sortLeaderboardsByScore(leaderboards);
 
         Leaderboard top = sorted.getFirst();
@@ -190,10 +190,10 @@ public class LeaderboardService {
         elapsedSeconds = Math.clamp(elapsedSeconds, 0, totalSeconds);
         long remainingSeconds = totalSeconds - elapsedSeconds;
 
-        int sessionScore = (int) ((remainingSeconds * 100) / totalSeconds);
-        int sessionScoreComputed = Math.max(sessionScore, 25); // If score below 25, then just return 25
+        int rawScore = (int) ((remainingSeconds * 100) / totalSeconds);
+        int earnedScore = Math.max(rawScore, 25); // If score below 25, then just return 25
 
-        return currentScore == null ? sessionScoreComputed : currentScore + sessionScoreComputed;
+        return currentScore == null ? earnedScore : currentScore + earnedScore;
     }
 
     private static @NonNull Function<UserRepresentation, LeaderboardDto> mapUserToLeaderboard(Map<String, Leaderboard> leaderBoardByAccountId) {
