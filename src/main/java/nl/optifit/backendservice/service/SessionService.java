@@ -162,7 +162,7 @@ public class SessionService {
             if (differenceBetweenSessionStartAndNow >= 60) {
                 log.warn("An hour has already passed after session start");
                 latestSession.setSessionStatus(SessionStatus.OVERDUE);
-                latestSession.setSessionExecutionTime(null);
+                latestSession.setSessionExecutionTime(now);
             } else {
                 latestSession.setSessionStatus(SessionStatus.COMPLETED);
                 latestSession.setSessionExecutionTime(now);
