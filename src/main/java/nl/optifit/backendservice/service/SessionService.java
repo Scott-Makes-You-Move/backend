@@ -191,9 +191,9 @@ public class SessionService {
     }
 
     public ResponseEntity<String> removeStaleSessions() {
-        ZonedDateTime yesterday = ZonedDateTime.now(ZoneId.of(TIMEZONE_EUROPE_AMSTERDAM)).minusDays(1);
-        log.debug("Removing sessions older than {}", yesterday);
-        sessionRepository.deleteSessionsOlderThan(yesterday);
+        ZonedDateTime oneMonthAgo = ZonedDateTime.now(ZoneId.of(TIMEZONE_EUROPE_AMSTERDAM)).minusMonths(1);
+        log.debug("Removing sessions older than {}", oneMonthAgo);
+        sessionRepository.deleteSessionsOlderThan(oneMonthAgo);
         return ResponseEntity.noContent().build();
     }
 
