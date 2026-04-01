@@ -34,6 +34,7 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static nl.optifit.backendservice.model.SessionStatus.COMPLETED;
+import static nl.optifit.backendservice.model.SessionStatus.LATE;
 import static nl.optifit.backendservice.model.SessionStatus.OVERDUE;
 
 @Slf4j
@@ -135,19 +136,20 @@ public class LeaderboardService {
         log.info("Leaderboard reset complete");
     }
 
-    private Leaderboard updateStreak(Session latestSession, Leaderboard leaderboard) {
-        Account account = latestSession.getAccount();
-        SessionStatus sessionStatus = latestSession.getSessionStatus();
+    private Leaderboard updateStreak(Session recentSession, Leaderboard leaderboard) {
+        Account account = recentSession.getAccount();
+        SessionStatus recentSessionStatus = recentSession.getSessionStatus();
 
-        if (sessionStatus.equals(COMPLETED)) {
-            leaderboard.setScore(calculateScore(leaderboard.getScore(), latestSession.getSessionStart(), latestSession.getSessionExecutionTime()));
+        if (recentSessionStatus.equals(COMPLETED)) {
+            leaderboard.setScore(calculateScore(leaderboard.getScore(), recentSession.getSessionStart(), recentSession.getSessionExecutionTime()));
             leaderboard.setCurrentStreak(leaderboard.getCurrentStreak() + 1);
             leaderboard.setLongestStreak(Math.max(leaderboard.getCurrentStreak(), leaderboard.getLongestStreak()));
-        }
-        if (sessionStatus.equals(OVERDUE)) {
-            leaderboard.setScore(leaderboard.getScore() == null ? 25 : leaderboard.getScore() + 25);
+        } else if (recentSessionStatus.equals(OVERDUE)) {
             leaderboard.setCurrentStreak(0);
+        } else if (recentSessionStatus.equals(LATE)) {
+            leaderboard.setScore(leaderboard.getScore() == null ? 25 : leaderboard.getScore() + 25);
         }
+
         leaderboard.setCompletionRate(calculateSessionCompletionRate(account, leaderboard));
         leaderboard.setLastUpdated(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
 

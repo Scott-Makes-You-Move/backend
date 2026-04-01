@@ -12,7 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 public enum SessionStatus {
     NEW("New"),
     COMPLETED("Completed"),
-    OVERDUE("Overdue");
+    OVERDUE("Overdue"),
+    LATE("Late");
 
     private final String displayName;
 

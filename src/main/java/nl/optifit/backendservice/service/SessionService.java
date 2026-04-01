@@ -162,11 +162,14 @@ public class SessionService {
             if (differenceBetweenSessionStartAndNow >= 60) {
                 log.warn("An hour has already passed after session start");
                 latestSession.setSessionStatus(SessionStatus.OVERDUE);
-                latestSession.setSessionExecutionTime(now);
+                latestSession.setSessionExecutionTime(null);
             } else {
                 latestSession.setSessionStatus(SessionStatus.COMPLETED);
                 latestSession.setSessionExecutionTime(now);
             }
+        } else if (latestSession.getSessionStatus().equals(SessionStatus.OVERDUE)) {
+            latestSession.setSessionExecutionTime(now);
+            latestSession.setSessionStatus(SessionStatus.LATE);
         }
 
         sessionRepository.save(latestSession);
